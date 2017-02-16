@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-
+#import "XRSTicketViewController.h"
 @interface AppDelegate ()
 
 @end
@@ -17,6 +17,12 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    XRSTicketViewController * ticketVC = [[XRSTicketViewController alloc]init];
+    UINavigationController * nc = [[UINavigationController alloc]initWithRootViewController:ticketVC];
+    self.window.rootViewController = nc;
+    
+    [self.window makeKeyAndVisible];
     return YES;
 }
 
