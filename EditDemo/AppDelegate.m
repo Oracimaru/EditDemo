@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "XRSTicketViewController.h"
+#import "DTInit.h"
 @interface AppDelegate ()
 
 @end
@@ -20,7 +21,12 @@
     
     XRSTicketViewController * ticketVC = [[XRSTicketViewController alloc]init];
     UINavigationController * nc = [[UINavigationController alloc]initWithRootViewController:ticketVC];
+    
     self.window.rootViewController = nc;
+    
+    UIColor *bgColor = [UIColor whiteColor];
+    [nc.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName:bgColor, NSFontAttributeName:[UIFont boldSystemFontOfSize:20]}];
+    [nc.navigationBar setBarTintColor:RGB(54, 153, 255)];
     
     [self.window makeKeyAndVisible];
     return YES;
