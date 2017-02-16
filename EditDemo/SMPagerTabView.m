@@ -264,7 +264,7 @@
 }
 - (CGFloat)tabFrameHeight {
     if (!_tabFrameHeight) {
-        self.tabFrameHeight = 40;
+        self.tabFrameHeight = 50;
     }
     return _tabFrameHeight;
 }

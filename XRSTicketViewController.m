@@ -344,6 +344,8 @@
     NSMutableArray *allTitles;
 
     UIView *bottomView;
+    UIButton *selectButton;
+    UILabel * selectLabel;
     BOOL isEdit;
     NSInteger    selectedIndex;
 
@@ -395,7 +397,7 @@
     segmentView = ({
         SMPagerTabView* segView = [[SMPagerTabView alloc]
                                    initWithFrame:CGRectMake(0, 0, self.view.width, 50)];
-        //segView.backgroundColor = [UIColor blueColor];
+//        segView.backgroundColor = [UIColor blueColor];
         allTitles = [NSMutableArray arrayWithObjects:@"未使用",@"已使用", nil];
         allViews = [NSMutableArray arrayWithObjects:XRSTicketTableView,XRSUsedTableView, nil];
         segView.delegate = self;
@@ -409,17 +411,48 @@
 
     bottomView = ({
         UIView *bView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 48)];
-        bView.backgroundColor = [UIColor lightGrayColor];
+        bView.backgroundColor = [UIColor whiteColor];
         bView;
     });
+    
+   
+    selectButton = ({
+        UIButton *sButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        sButton.frame = CGRectMake(0, 0, 40, 40);
+        [sButton setImage:[UIImage imageNamed:@"study_unselected"] forState:UIControlStateNormal];
+        [sButton setImage:[UIImage imageNamed:@"study_selected"] forState:UIControlStateSelected];
+        [sButton addTarget:self action:@selector(buttonSelect:) forControlEvents:UIControlEventTouchUpInside];
+        [bottomView addSubview:sButton];
+        [sButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.width.height.equalTo(@15);
+            make.left.equalTo(bottomView).offset(15);
+            make.centerY.equalTo(bottomView);
+        }];
+
+        sButton;
+    });
+    selectLabel = ({
+        UILabel *tLabel = [[UILabel alloc] init];
+        tLabel.textColor = [UIColor lightGrayColor];
+        tLabel.font = [UIFont systemFontOfSize:18];
+        tLabel.text = @"全选";
+        [bottomView addSubview:tLabel];
+        [tLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(selectButton.mas_right).offset(10);
+            make.centerY.equalTo(selectButton);
+        }];
+        tLabel;
+    });
+
     deleteButton = ({
         UIButton *dButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//        [dButton setBackgroundColor:UITEXTCOLOR_TITLE];
-        dButton.titleLabel.font = [UIFont systemFontOfSize:14];
-        [dButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
-        [dButton setTitle:@"解绑" forState:UIControlStateNormal];
+        dButton.titleLabel.font = [UIFont systemFontOfSize:18];
+        [dButton setBackgroundColor:[UIColor colorWithRed:1 green:0.36 blue:0.35 alpha:1]];
+        [dButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [dButton setTitle:@"解绑并删除" forState:UIControlStateNormal];
         [dButton addTarget:self action:@selector(deleteSelect) forControlEvents:UIControlEventTouchUpInside];
         [bottomView addSubview:dButton];
+       
         dButton;
     });
 
@@ -436,8 +469,8 @@
         segmentView.bodyScrollView.frame = CGRectMake(0, segmentView.height, self.view.width, self.view.height  - segmentView.height);
 
     }
-    deleteButton.frame = CGRectMake(bottomView.width - 80, 0, 80, bottomView.height);
-
+    deleteButton.frame = CGRectMake(bottomView.width - 157, 0, 157, bottomView.height);
+    
 }
 -(void)addRightButton
 {
@@ -492,6 +525,12 @@
 - (void)deleteSelect
 {
     
+}
+- (void)buttonSelect:(UIButton*)sender
+{
+    UIButton *button = (UIButton *)sender;
+    button.selected = !button.isSelected;
+
 }
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
@@ -565,7 +604,6 @@
     }
     
 }
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
