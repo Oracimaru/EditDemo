@@ -7,7 +7,6 @@
 //
 
 #import "SMPagerTabView.h"
-
 @interface SMPagerTabView()
 
 @property (nonatomic, strong) NSMutableArray* viewsArray;
@@ -265,7 +264,7 @@
 }
 - (CGFloat)tabFrameHeight {
     if (!_tabFrameHeight) {
-        self.tabFrameHeight = 40;
+        self.tabFrameHeight = 50;
     }
     return _tabFrameHeight;
 }
@@ -293,22 +292,23 @@
     }
     return _tabButtonFontSize;
 }
-- (UIColor *)tabButtonTitleColorForNormal {
+- (UIColor*)tabButtonTitleColorForNormal {
     if (!_tabButtonTitleColorForNormal) {
-        self.tabButtonTitleColorForNormal = [UIColor blackColor];
+        self.tabButtonTitleColorForNormal = [UIColor colorWithRed:0.45 green:0.45 blue:0.45 alpha:1];
+        
     }
     return _tabButtonTitleColorForNormal;
 }
-- (UIColor *)tabButtonTitleColorForSelected {
+- (UIColor*)tabButtonTitleColorForSelected {
     if (!_tabButtonTitleColorForSelected) {
-        self.tabButtonTitleColorForSelected = [UIColor redColor];
+        self.tabButtonTitleColorForSelected = [UIColor colorWithRed:0.18 green:0.58 blue:1 alpha:1];
     }
     return _tabButtonTitleColorForSelected;
 }
 - (UIView *)selectedLine {
     if (!_selectedLine) {
         self.selectedLine = [[UIView alloc] initWithFrame:CGRectMake(0, self.tabView.height - 2, self.selectedLineWidth, 2)];
-        _selectedLine.backgroundColor = [UIColor redColor];
+        _selectedLine.backgroundColor = [UIColor colorWithRed:0.18 green:0.58 blue:1 alpha:1];
         [self addSubview:_selectedLine];
     }
     return _selectedLine;

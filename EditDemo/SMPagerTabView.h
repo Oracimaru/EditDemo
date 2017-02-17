@@ -14,15 +14,15 @@
 @interface SMPagerTabView : UIView<UIScrollViewDelegate>
 
 @property (nonatomic, strong) UIScrollView* bodyScrollView;
-@property (nonatomic,weak) UIView *containerView;
+@property (nonatomic,strong) UIView *containerView;
 @property (nonatomic, weak) id<SMPagerTabViewDelegate> delegate;
 
 @property (nonatomic, assign) CGFloat tabFrameHeight; //头部tab高
 @property (nonatomic, strong) UIColor* tabBackgroundColor; //头部tab背景颜色
 @property (nonatomic, assign) CGFloat tabButtonFontSize; //头部tab按钮字体大小
 @property (nonatomic, assign) CGFloat tabMargin; //头部tab左右两端和边缘的间隔
-@property (nonatomic, assign) UIColor* tabButtonTitleColorForNormal;
-@property (nonatomic, assign) UIColor* tabButtonTitleColorForSelected;
+@property (nonatomic, strong) UIColor* tabButtonTitleColorForNormal;
+@property (nonatomic, strong) UIColor* tabButtonTitleColorForSelected;
 @property (nonatomic, assign) CGFloat selectedLineWidth; //下划线的宽
 @property (nonatomic, assign) BOOL showVerticalLine;
 
