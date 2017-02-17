@@ -109,7 +109,9 @@
 }
 @property (nonatomic, strong) UIButton * selectButton;
 @property (nonatomic, copy) void (^onCellSelect)(BOOL isSelect);
+@property (nonatomic, copy) void (^onCellOpened)(BOOL isOpen);
 
+@property(nonatomic,getter=isOpened) BOOL opened;
 @end
 
 @implementation XRSTicketCell
@@ -209,6 +211,7 @@
         tLabel.textColor = [UIColor lightGrayColor];
         tLabel.font = [UIFont systemFontOfSize:14];
         tLabel.text = @"使用规则";
+        tLabel.userInteractionEnabled = YES;
         [realContentView addSubview:tLabel];
         tLabel;
     });
@@ -225,6 +228,7 @@
     arowImageView = ({
         UIImageView * imgView = [[UIImageView alloc]init];
         imgView.image = [UIImage imageNamed:@"向下"];
+        imgView.userInteractionEnabled = YES;
         [realContentView addSubview:imgView];
         imgView;
     });
@@ -235,8 +239,11 @@
         imgView;
     });
     
-    
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(arrowTapedAction:)];
+    [arowImageView addGestureRecognizer:tap];
+    [useLabel addGestureRecognizer:tap];
     isEdit = NO;
+    self.opened = YES;
 }
 - (void)layoutSubviews
 {
@@ -328,7 +335,23 @@
 - (void)cellForData:(XRSTicketList *)cellData {
     self.selectButton.selected = cellData.isSelected;
 }
-
+- (void)arrowTapedAction:(UITapGestureRecognizer *)tap
+{
+    self.opened = ! self.isOpened;
+    [contentLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(backImageView.mas_bottom);
+        make.height.equalTo(@0);
+        make.bottom.equalTo(self.contentView);
+    }];
+    if (self.onCellOpened) {
+        self.onCellOpened(self.opened);
+    }
+    [UIView animateWithDuration:0.3 animations:^{
+        [self.contentView layoutIfNeeded];
+        
+    }];
+    
+}
 @end
 
 static int TTag = 7000;
@@ -585,6 +608,11 @@ static int TTag = 7000;
         selectButton.selected = NO;
     }
 }
+
+- (void)cellOpened:(BOOL)isOpen section :(NSInteger)section
+{
+    
+}
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return 1;
@@ -605,10 +633,23 @@ static int TTag = 7000;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
+    NSInteger rowSection ;
+    if (tableView == XRSTicketTableView) {
+        rowSection = indexPath.section - 1;
+    }
+    else{
+        rowSection = indexPath.section;
+    }
+    XRSTicketCell * cell = (XRSTicketCell *)[self.view viewWithTag:TTag + rowSection];
     if (indexPath.section == 0 && tableView == XRSTicketTableView) {
         return 48;
     }
+    else if(cell.isOpened){
     return 203.0f;
+    }
+    else{
+        return 132.0f;
+    }
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -654,7 +695,10 @@ static int TTag = 7000;
         cell.onCellSelect = ^(BOOL isSelect){
             [weakSelf cellSelectAction:isSelect section:rowSection];
         };
-        
+        cell.onCellOpened = ^(BOOL isOpen){
+//            [weakSelf cellOpened:isOpen section:rowSection];
+            [tableView reloadSections:[NSIndexSet indexSetWithIndex:rowSection] withRowAnimation:UITableViewRowAnimationFade];
+        };
         return cell;
     }
     
