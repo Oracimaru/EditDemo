@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		65F173111E56CFF1003A2E63 /* XRSTicketList.m in Sources */ = {isa = PBXBuildFile; fileRef = 65F173101E56CFF1003A2E63 /* XRSTicketList.m */; };
 		8D408FFC1E52F4EB00098BB7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D408FFB1E52F4EB00098BB7 /* main.m */; };
 		8D408FFF1E52F4EB00098BB7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D408FFE1E52F4EB00098BB7 /* AppDelegate.m */; };
 		8D4090021E52F4EB00098BB7 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D4090011E52F4EB00098BB7 /* ViewController.m */; };
@@ -48,6 +49,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		65F1730F1E56CFF1003A2E63 /* XRSTicketList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XRSTicketList.h; sourceTree = "<group>"; };
+		65F173101E56CFF1003A2E63 /* XRSTicketList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XRSTicketList.m; sourceTree = "<group>"; };
 		8D408FF71E52F4EB00098BB7 /* EditDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EditDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D408FFB1E52F4EB00098BB7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		8D408FFD1E52F4EB00098BB7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -157,6 +160,8 @@
 				8D4090321E52FB7E00098BB7 /* UIView+frameAdjust.m */,
 				8D4090341E53007500098BB7 /* XRSTicketViewController.h */,
 				8D4090351E53007500098BB7 /* XRSTicketViewController.m */,
+				65F1730F1E56CFF1003A2E63 /* XRSTicketList.h */,
+				65F173101E56CFF1003A2E63 /* XRSTicketList.m */,
 				8D4090371E53015D00098BB7 /* Masonry */,
 				8D4090031E52F4EB00098BB7 /* Main.storyboard */,
 				8D4090061E52F4EB00098BB7 /* Assets.xcassets */,
@@ -365,6 +370,7 @@
 				8D4090541E53015D00098BB7 /* MASLayoutConstraint.m in Sources */,
 				8D4090361E53007500098BB7 /* XRSTicketViewController.m in Sources */,
 				8D4090591E53015D00098BB7 /* View+MASAdditions.m in Sources */,
+				65F173111E56CFF1003A2E63 /* XRSTicketList.m in Sources */,
 				8D4090511E53015D00098BB7 /* MASCompositeConstraint.m in Sources */,
 				8D4090581E53015D00098BB7 /* NSLayoutConstraint+MASDebugAdditions.m in Sources */,
 				8D4090531E53015D00098BB7 /* MASConstraintMaker.m in Sources */,

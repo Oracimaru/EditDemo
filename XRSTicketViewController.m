@@ -11,6 +11,7 @@
 #import "UIView+frameAdjust.h"
 #import "DTInit.h"
 #import "SMPagerTabView.h"
+#import "XRSTicketList.h"
 @interface XRSAddTicketCell :UITableViewCell {
     
     UILabel       *titleLabel;
@@ -92,7 +93,6 @@
 @interface XRSTicketCell : UITableViewCell {
     
     UIView *realContentView;
-    UIButton *selectButton;
     UIImageView * backImageView;//上半部分
     UILabel  *priceLabel;
     UILabel  *ticketLabel;
@@ -106,8 +106,8 @@
     BOOL isEdit;
     
 }
-
-@property (nonatomic, copy) void (^onSelect)(BOOL isSelect);
+@property (nonatomic, strong) UIButton * selectButton;
+@property (nonatomic, copy) void (^onCellSelect)(BOOL isSelect);
 
 @end
 
@@ -137,12 +137,12 @@
     return image;
 }
 - (void)customInit {
-    selectButton = ({
+    self.selectButton = ({
         UIButton *sButton = [UIButton buttonWithType:UIButtonTypeCustom];
         sButton.frame = CGRectMake(0, 0, 40, 40);
         [sButton setImage:[UIImage imageNamed:@"study_unselected"] forState:UIControlStateNormal];
         [sButton setImage:[UIImage imageNamed:@"study_selected"] forState:UIControlStateSelected];
-        [sButton addTarget:self action:@selector(buttonSelect:) forControlEvents:UIControlEventTouchUpInside];
+        [sButton addTarget:self action:@selector(cellButtonSelect:) forControlEvents:UIControlEventTouchUpInside];
         [self.contentView addSubview:sButton];
         
         sButton;
@@ -240,20 +240,12 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    [selectButton mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.selectButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.contentView).offset(15);
         make.centerY.equalTo(self.contentView);
     }];
    
-    [realContentView mas_makeConstraints:^(MASConstraintMaker *make) {
-        if (isEdit) {
-            make.left.equalTo(self.contentView).offset(45);
-        }else{
-            make.left.equalTo(self.contentView).offset(15);
-        }
-        make.top.bottom.equalTo(self.contentView);
-        make.right.equalTo(self.contentView).offset(-15);
-    }];
+
     [backImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.top.equalTo(realContentView);
         make.height.equalTo(@132);
@@ -324,35 +316,41 @@
     }];
 }
 
-- (void)buttonSelect:(id)sender {
+- (void)cellButtonSelect:(id)sender {
     UIButton *button = (UIButton *)sender;
     button.selected = !button.isSelected;
-    //    if (self.onSelect) {
-    //        self.onSelect(button.isSelected);
-    //    }
+        if (self.onCellSelect) {
+            self.onCellSelect(button.isSelected);
+        }
 //    _currentDownloadItem.isSelected = button.selected;
+}
+- (void)cellForData:(XRSTicketList *)cellData {
+    self.selectButton.selected = cellData.isSelected;
 }
 
 @end
 
+static int TTag = 7000;
 @interface XRSTicketViewController ()<UITableViewDataSource, UITableViewDelegate,SMPagerTabViewDelegate>{
     
     UITableView * XRSTicketTableView;
     UITableView * XRSUsedTableView;
     SMPagerTabView *segmentView;
+    
     NSMutableArray *allViews;
     NSMutableArray *allTitles;
-
+    NSMutableArray *ticketArray;
+    NSMutableArray *usedArray;
+    
     UIView *bottomView;
     UIButton *selectButton;
     UILabel * selectLabel;
-    BOOL isEdit;
-    NSInteger    selectedIndex;
-
     UIButton *editButton;
     UIButton *deleteButton;
 
-    
+    BOOL isEdit;
+    NSInteger    selectedIndex;
+
 }
 
 @end
@@ -367,7 +365,13 @@
 
     self.title = @"我的优惠券";
     isEdit = NO;
-
+    ticketArray  =[NSMutableArray new];
+    usedArray = [NSMutableArray new];
+    for (int i=0;i<5;i++){
+        XRSTicketList * list = [XRSTicketList new];
+        [ticketArray addObject:list];
+        [usedArray addObject:list];
+    }
     [self.view addSubview:bottomView];
     [self addRightButton];
     [XRSTicketTableView reloadData];
@@ -452,7 +456,11 @@
         [dButton setTitle:@"解绑并删除" forState:UIControlStateNormal];
         [dButton addTarget:self action:@selector(deleteSelect) forControlEvents:UIControlEventTouchUpInside];
         [bottomView addSubview:dButton];
-       
+        [dButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.right.height.equalTo(bottomView);
+            make.centerY.equalTo(bottomView);
+            make.width.equalTo(@157);
+        }];
         dButton;
     });
 
@@ -469,7 +477,7 @@
         segmentView.bodyScrollView.frame = CGRectMake(0, segmentView.height, self.view.width, self.view.height  - segmentView.height);
 
     }
-    deleteButton.frame = CGRectMake(bottomView.width - 157, 0, 157, bottomView.height);
+//    deleteButton.frame = CGRectMake(bottomView.width - 157, 0, 157, bottomView.height);
     
 }
 -(void)addRightButton
@@ -514,14 +522,14 @@
         bottomView.top = self.view.height;
 
     }
-    segmentView.bodyScrollView.height = bottomView.top  ;
+    segmentView.bodyScrollView.height = bottomView.top - segmentView.height ;
     [segmentView setNeedsLayout];
-    deleteButton.centerY = bottomView.centerY;
+    //deleteButton.centerY = bottomView.centerY;
 
     [editButton setTitle:isEdit?@"完成":@"编辑" forState:UIControlStateNormal];
     XRSTicketTableView.editing = isEdit;
 }
-#pragma mark  -- 暂时用于兑换优惠券
+#pragma mark  -- 删除
 - (void)deleteSelect
 {
     
@@ -530,7 +538,36 @@
 {
     UIButton *button = (UIButton *)sender;
     button.selected = !button.isSelected;
+    deleteButton.enabled = button.isSelected;
+    for (int i = 0; i < ticketArray.count; i++) {
+        XRSTicketCell * cell = (XRSTicketCell *)[self.view viewWithTag:TTag + i];
+        //cell.selectButton.selected = YES;
+        XRSTicketList * list = ticketArray[i];
+        list.selected = button.isSelected;
+        [ticketArray replaceObjectAtIndex:i withObject:list];
+    }
+    [XRSTicketTableView reloadData];
 
+}
+- (void)cellSelectAction :(BOOL)isSelect section :(NSInteger)section
+{
+    XRSTicketList * list = ticketArray[section];
+    list.selected = isSelect;
+    [ticketArray replaceObjectAtIndex:section withObject:list];
+    
+    BOOL AllSelect = YES;
+    for (XRSTicketList * ticket in ticketArray) {
+        if (!ticket.isSelected) {
+            AllSelect = NO;
+            break;
+        }
+    }
+    if (AllSelect && ticketArray.count > 0){
+        selectButton.selected = YES;
+    }
+    else{
+        selectButton.selected = NO;
+    }
 }
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
@@ -538,7 +575,10 @@
 }
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 10;
+    if (tableView == XRSTicketTableView) {
+        return ticketArray.count + 1;
+    }
+    return usedArray.count;
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     return 10.0f;
@@ -548,7 +588,8 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 0) {
+    
+    if (indexPath.section == 0 && tableView == XRSTicketTableView) {
         return 48;
     }
     return 203.0f;
@@ -557,8 +598,8 @@
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     
-    switch (indexPath.section) {
-        case 0:
+    if (indexPath.section == 0 && tableView == XRSTicketTableView)
+       
         {
             XRSAddTicketCell *cell= [tableView dequeueReusableCellWithIdentifier:
                                  NSStringFromClass([XRSAddTicketCell class])];
@@ -570,29 +611,37 @@
             }
            
             return cell;
-            break;
         }
             
-        default: {
-            XRSTicketCell *cell= [tableView dequeueReusableCellWithIdentifier:
-                                  NSStringFromClass([XRSTicketCell class])];
-            if(!cell){
-                cell= [[XRSTicketCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:
-                       NSStringFromClass([XRSTicketCell class])];
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            }
-            //            if (!_dataArray.exsit) {
-            //                return cell;
-            //            }
-            
-            //            DTGoodsDetail *detail = self.activityData.list[indexPath.row];
-            //            [cell cellForData:detail];
-
+    else {
+        XRSTicketCell *cell= [tableView dequeueReusableCellWithIdentifier:
+                              NSStringFromClass([XRSTicketCell class])];
+        if(!cell){
+            cell= [[XRSTicketCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:
+                   NSStringFromClass([XRSTicketCell class])];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            cell.tag = TTag + indexPath.section - 1;
+        }
+        if (ticketArray.count ==0) {
             return cell;
-            break;
         }
-            
+        NSInteger rowSection ;
+        if (tableView == XRSTicketTableView) {
+            rowSection = indexPath.section - 1;
+        }
+        else{
+            rowSection = indexPath.section;
+        }
+        XRSTicketList *list = ticketArray[rowSection];
+        [cell cellForData:list];
+        __weak typeof(self) weakSelf = self;
+        cell.onCellSelect = ^(BOOL isSelect){
+            [weakSelf cellSelectAction:isSelect section:rowSection];
+        };
+        
+        return cell;
     }
+    
     return 0;
 
 }
