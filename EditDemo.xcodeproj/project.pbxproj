@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		65F173111E56CFF1003A2E63 /* XRSTicketList.m in Sources */ = {isa = PBXBuildFile; fileRef = 65F173101E56CFF1003A2E63 /* XRSTicketList.m */; };
+		0908DA231E559EE3003B1137 /* XRSInputAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0908DA221E559EE3003B1137 /* XRSInputAlertView.m */; };
 		8D408FFC1E52F4EB00098BB7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D408FFB1E52F4EB00098BB7 /* main.m */; };
 		8D408FFF1E52F4EB00098BB7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D408FFE1E52F4EB00098BB7 /* AppDelegate.m */; };
 		8D4090021E52F4EB00098BB7 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D4090011E52F4EB00098BB7 /* ViewController.m */; };
@@ -51,6 +52,8 @@
 /* Begin PBXFileReference section */
 		65F1730F1E56CFF1003A2E63 /* XRSTicketList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XRSTicketList.h; sourceTree = "<group>"; };
 		65F173101E56CFF1003A2E63 /* XRSTicketList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XRSTicketList.m; sourceTree = "<group>"; };
+		0908DA211E559EE3003B1137 /* XRSInputAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XRSInputAlertView.h; sourceTree = "<group>"; };
+		0908DA221E559EE3003B1137 /* XRSInputAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XRSInputAlertView.m; sourceTree = "<group>"; };
 		8D408FF71E52F4EB00098BB7 /* EditDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EditDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D408FFB1E52F4EB00098BB7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		8D408FFD1E52F4EB00098BB7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -162,6 +165,8 @@
 				8D4090351E53007500098BB7 /* XRSTicketViewController.m */,
 				65F1730F1E56CFF1003A2E63 /* XRSTicketList.h */,
 				65F173101E56CFF1003A2E63 /* XRSTicketList.m */,
+				0908DA211E559EE3003B1137 /* XRSInputAlertView.h */,
+				0908DA221E559EE3003B1137 /* XRSInputAlertView.m */,
 				8D4090371E53015D00098BB7 /* Masonry */,
 				8D4090031E52F4EB00098BB7 /* Main.storyboard */,
 				8D4090061E52F4EB00098BB7 /* Assets.xcassets */,
@@ -298,6 +303,7 @@
 				TargetAttributes = {
 					8D408FF61E52F4EB00098BB7 = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = 499JTTNTTD;
 					};
 					8D40900F1E52F4EB00098BB7 = {
 						CreatedOnToolsVersion = 7.3.1;
@@ -374,6 +380,7 @@
 				8D4090511E53015D00098BB7 /* MASCompositeConstraint.m in Sources */,
 				8D4090581E53015D00098BB7 /* NSLayoutConstraint+MASDebugAdditions.m in Sources */,
 				8D4090531E53015D00098BB7 /* MASConstraintMaker.m in Sources */,
+				0908DA231E559EE3003B1137 /* XRSInputAlertView.m in Sources */,
 				8DE716421E542CF400D64F66 /* SMPagerTabView.m in Sources */,
 				8D4090331E52FB7E00098BB7 /* UIView+frameAdjust.m in Sources */,
 				8D408FFF1E52F4EB00098BB7 /* AppDelegate.m in Sources */,
@@ -518,6 +525,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 499JTTNTTD;
 				INFOPLIST_FILE = EditDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -530,6 +538,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 499JTTNTTD;
 				INFOPLIST_FILE = EditDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

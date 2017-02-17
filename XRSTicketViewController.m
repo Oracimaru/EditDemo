@@ -12,6 +12,7 @@
 #import "DTInit.h"
 #import "SMPagerTabView.h"
 #import "XRSTicketList.h"
+#import "XRSInputAlertView.h"
 @interface XRSAddTicketCell :UITableViewCell {
     
     UILabel       *titleLabel;
@@ -331,7 +332,7 @@
 @end
 
 static int TTag = 7000;
-@interface XRSTicketViewController ()<UITableViewDataSource, UITableViewDelegate,SMPagerTabViewDelegate>{
+@interface XRSTicketViewController ()<UITableViewDataSource, UITableViewDelegate,SMPagerTabViewDelegate,XRSInputAlertViewDelegate>{
     
     UITableView * XRSTicketTableView;
     UITableView * XRSUsedTableView;
@@ -375,7 +376,6 @@ static int TTag = 7000;
     [self.view addSubview:bottomView];
     [self addRightButton];
     [XRSTicketTableView reloadData];
-
 }
 - (void)loadView
 {
@@ -530,10 +530,26 @@ static int TTag = 7000;
     XRSTicketTableView.editing = isEdit;
 }
 #pragma mark  -- 删除
+- (void)inputPromoCode
+{
+    XRSInputAlertView *inputAlertview = [[XRSInputAlertView alloc] initWithTitle:@"请输入您的优惠券码" delegate:self message:nil confirmButton:@"确认兑换"];
+    UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+    [keyWindow addSubview:inputAlertview];
+}
+
+
 - (void)deleteSelect
 {
     
 }
+
+
+#pragma mark xrsInputAlertViewDelegate
+- (void)xrsInputAlertView:(XRSInputAlertView *)inputAlertView clickedButtonWithContent:(NSString *)content
+{
+    NSLog(@"优惠券码：%@",content);
+}
+
 - (void)buttonSelect:(UIButton*)sender
 {
     UIButton *button = (UIButton *)sender;
@@ -650,6 +666,7 @@ static int TTag = 7000;
 //    DTSelectCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     if (indexPath.section == 0){
         //录入优惠券入口
+        [self inputPromoCode];
     }
     
 }

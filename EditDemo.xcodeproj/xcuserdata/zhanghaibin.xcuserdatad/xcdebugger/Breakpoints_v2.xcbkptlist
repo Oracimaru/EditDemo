@@ -10,12 +10,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "XRSTicketViewController.m"
-            timestampString = "509013938.821434"
+            timestampString = "509014337.498403"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "328"
-            endingLineNumber = "328"
-            landmarkName = "-cellForData:"
+            startingLineNumber = "325"
+            endingLineNumber = "325"
+            landmarkName = "-cellButtonSelect:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -26,12 +26,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "XRSTicketViewController.m"
-            timestampString = "509013938.821434"
+            timestampString = "509014337.498403"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "554"
-            endingLineNumber = "554"
-            landmarkName = "-cellSelectAction:section:"
+            startingLineNumber = "542"
+            endingLineNumber = "542"
+            landmarkName = "-deleteSelect"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -60,11 +60,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "XRSTicketViewController.m"
-            timestampString = "509013116.51045"
+            timestampString = "509014337.498403"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "238"
-            endingLineNumber = "238"
+            startingLineNumber = "235"
+            endingLineNumber = "235"
             landmarkName = "-customInit"
             landmarkType = "5">
          </BreakpointContent>
@@ -76,11 +76,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "XRSTicketViewController.m"
-            timestampString = "509013938.821434"
+            timestampString = "509014337.498403"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "301"
-            endingLineNumber = "301"
+            startingLineNumber = "298"
+            endingLineNumber = "298"
             landmarkName = "-setEditing:animated:"
             landmarkType = "5">
          </BreakpointContent>
