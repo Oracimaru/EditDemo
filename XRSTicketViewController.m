@@ -240,10 +240,9 @@
     });
     
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(arrowTapedAction:)];
-    [arowImageView addGestureRecognizer:tap];
+    //[arowImageView addGestureRecognizer:tap];
     [useLabel addGestureRecognizer:tap];
     isEdit = NO;
-    self.opened = YES;
 }
 - (void)layoutSubviews
 {
@@ -290,7 +289,7 @@
         make.bottom.equalTo(useLabel);
         make.size.mas_equalTo(CGSizeMake(15, 14));
     }];
-    [contentLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+    [contentLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(realContentView).offset(13);
         make.right.equalTo(realContentView).offset(-13);
         make.top.equalTo(backImageView.mas_bottom).offset(11);
@@ -299,7 +298,7 @@
         make.right.equalTo(realContentView).offset(-11);
         make.top.equalTo(realContentView).offset(11);
     }];
-    MASAttachKeys(realContentView,realContentView);
+    MASAttachKeys(realContentView,realContentView,contentLabel,contentLabel,backImageView,backImageView);
 }
 
 
@@ -334,15 +333,30 @@
 }
 - (void)cellForData:(XRSTicketList *)cellData {
     self.selectButton.selected = cellData.isSelected;
+    self.opened = cellData.isOpened;
 }
 - (void)arrowTapedAction:(UITapGestureRecognizer *)tap
 {
     self.opened = ! self.isOpened;
-    [contentLabel mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(backImageView.mas_bottom);
-        make.height.equalTo(@0);
-        make.bottom.equalTo(self.contentView);
-    }];
+    if (self.opened){
+        contentLabel.alpha = 1;
+//    [contentLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+//        make.top.bottom.equalTo(backImageView.mas_bottom);
+//        make.left.equalTo(realContentView).offset(13);
+//        make.right.equalTo(realContentView).offset(-13);
+//
+//    }];
+    }
+    else
+    {
+        contentLabel.alpha = 0;
+//        [contentLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+//            make.top.equalTo(backImageView.mas_bottom).offset(11);
+//            make.left.equalTo(realContentView).offset(13);
+//            make.right.equalTo(realContentView).offset(-13);
+//
+//        }];
+    }
     if (self.onCellOpened) {
         self.onCellOpened(self.opened);
     }
@@ -355,6 +369,8 @@
 @end
 
 static int TTag = 7000;
+static int UTag = 8000;
+
 @interface XRSTicketViewController ()<UITableViewDataSource, UITableViewDelegate,SMPagerTabViewDelegate,XRSInputAlertViewDelegate>{
     
     UITableView * XRSTicketTableView;
@@ -391,8 +407,9 @@ static int TTag = 7000;
     isEdit = NO;
     ticketArray  =[NSMutableArray new];
     usedArray = [NSMutableArray new];
-    for (int i=0;i<5;i++){
+    for (int i=0;i<2;i++){
         XRSTicketList * list = [XRSTicketList new];
+        list.opened = YES;
         [ticketArray addObject:list];
         [usedArray addObject:list];
     }
@@ -640,15 +657,21 @@ static int TTag = 7000;
     else{
         rowSection = indexPath.section;
     }
-    XRSTicketCell * cell = (XRSTicketCell *)[self.view viewWithTag:TTag + rowSection];
+    NSInteger cellTag ;
+    tableView == XRSTicketTableView ? cellTag = TTag  : (cellTag = UTag) ;
+
+    XRSTicketCell * cell = (XRSTicketCell *)[self.view viewWithTag:cellTag + rowSection];
+
     if (indexPath.section == 0 && tableView == XRSTicketTableView) {
         return 48;
     }
-    else if(cell.isOpened){
-    return 203.0f;
+    XRSTicketList * list = ticketArray[rowSection];
+
+    if(!list.isOpened){
+        return 132.0f;
     }
     else{
-        return 132.0f;
+        return 203.0f;
     }
 }
 
@@ -677,7 +700,7 @@ static int TTag = 7000;
             cell= [[XRSTicketCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:
                    NSStringFromClass([XRSTicketCell class])];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            cell.tag = TTag + indexPath.section - 1;
+            tableView == XRSTicketTableView ? (cell.tag = TTag + indexPath.section - 1) : (cell.tag = UTag + indexPath.section);
         }
         if (ticketArray.count ==0) {
             return cell;
@@ -696,8 +719,10 @@ static int TTag = 7000;
             [weakSelf cellSelectAction:isSelect section:rowSection];
         };
         cell.onCellOpened = ^(BOOL isOpen){
-//            [weakSelf cellOpened:isOpen section:rowSection];
-            [tableView reloadSections:[NSIndexSet indexSetWithIndex:rowSection] withRowAnimation:UITableViewRowAnimationFade];
+            XRSTicketList * detail = ticketArray[rowSection];
+            detail.opened = isOpen;
+            [ticketArray replaceObjectAtIndex:rowSection withObject:detail];
+            [tableView reloadSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationFade];
         };
         return cell;
     }

@@ -11,5 +11,7 @@
 @interface XRSTicketList : NSObject
 
 @property (nonatomic, getter=isSelected) BOOL         selected;
+@property (nonatomic, getter=isOpened) BOOL         opened;
+
 
 @end
