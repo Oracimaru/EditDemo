@@ -289,11 +289,19 @@
         make.bottom.equalTo(useLabel);
         make.size.mas_equalTo(CGSizeMake(15, 14));
     }];
-    [contentLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(realContentView).offset(13);
-        make.right.equalTo(realContentView).offset(-13);
-        make.top.equalTo(backImageView.mas_bottom).offset(11);
-    }];
+
+    __weak typeof(self) weakSelf = self;
+        [contentLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(realContentView).offset(13);
+            make.right.equalTo(realContentView).offset(-13);
+            if (weakSelf.isOpened) {
+                make.top.equalTo(backImageView.mas_bottom).offset(11);
+            }else
+            {
+                make.top.bottom.equalTo(backImageView.mas_bottom);
+            }
+        }];
+   
     [sealView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.equalTo(realContentView).offset(-11);
         make.top.equalTo(realContentView).offset(11);
@@ -329,7 +337,6 @@
         if (self.onCellSelect) {
             self.onCellSelect(button.isSelected);
         }
-//    _currentDownloadItem.isSelected = button.selected;
 }
 - (void)cellForData:(XRSTicketList *)cellData {
     self.selectButton.selected = cellData.isSelected;
@@ -338,25 +345,7 @@
 - (void)arrowTapedAction:(UITapGestureRecognizer *)tap
 {
     self.opened = ! self.isOpened;
-    if (self.opened){
-        contentLabel.alpha = 1;
-//    [contentLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-//        make.top.bottom.equalTo(backImageView.mas_bottom);
-//        make.left.equalTo(realContentView).offset(13);
-//        make.right.equalTo(realContentView).offset(-13);
-//
-//    }];
-    }
-    else
-    {
-        contentLabel.alpha = 0;
-//        [contentLabel mas_updateConstraints:^(MASConstraintMaker *make) {
-//            make.top.equalTo(backImageView.mas_bottom).offset(11);
-//            make.left.equalTo(realContentView).offset(13);
-//            make.right.equalTo(realContentView).offset(-13);
-//
-//        }];
-    }
+
     if (self.onCellOpened) {
         self.onCellOpened(self.opened);
     }
@@ -368,8 +357,6 @@
 }
 @end
 
-static int TTag = 7000;
-static int UTag = 8000;
 
 @interface XRSTicketViewController ()<UITableViewDataSource, UITableViewDelegate,SMPagerTabViewDelegate,XRSInputAlertViewDelegate>{
     
@@ -407,10 +394,14 @@ static int UTag = 8000;
     isEdit = NO;
     ticketArray  =[NSMutableArray new];
     usedArray = [NSMutableArray new];
-    for (int i=0;i<2;i++){
+    for (int i=0;i<8;i++){
         XRSTicketList * list = [XRSTicketList new];
         list.opened = YES;
         [ticketArray addObject:list];
+    }
+    for (int i=0;i<5;i++){
+        XRSTicketList * list = [XRSTicketList new];
+        list.opened = YES;
         [usedArray addObject:list];
     }
     [self.view addSubview:bottomView];
@@ -596,8 +587,6 @@ static int UTag = 8000;
     button.selected = !button.isSelected;
     deleteButton.enabled = button.isSelected;
     for (int i = 0; i < ticketArray.count; i++) {
-        XRSTicketCell * cell = (XRSTicketCell *)[self.view viewWithTag:TTag + i];
-        //cell.selectButton.selected = YES;
         XRSTicketList * list = ticketArray[i];
         list.selected = button.isSelected;
         [ticketArray replaceObjectAtIndex:i withObject:list];
@@ -626,10 +615,7 @@ static int UTag = 8000;
     }
 }
 
-- (void)cellOpened:(BOOL)isOpen section :(NSInteger)section
-{
-    
-}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return 1;
@@ -650,86 +636,133 @@ static int UTag = 8000;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    NSInteger rowSection ;
     if (tableView == XRSTicketTableView) {
-        rowSection = indexPath.section - 1;
+       return  [self ticketTableView:tableView heightForRowAtIndexPath:indexPath];
     }
     else{
-        rowSection = indexPath.section;
+      return  [self usedTableView:tableView heightForRowAtIndexPath:indexPath];
     }
-    NSInteger cellTag ;
-    tableView == XRSTicketTableView ? cellTag = TTag  : (cellTag = UTag) ;
-
-    XRSTicketCell * cell = (XRSTicketCell *)[self.view viewWithTag:cellTag + rowSection];
-
-    if (indexPath.section == 0 && tableView == XRSTicketTableView) {
+   
+}
+- (CGFloat)ticketTableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == 0) {
         return 48;
     }
-    XRSTicketList * list = ticketArray[rowSection];
-
-    if(!list.isOpened){
-        return 132.0f;
-    }
-    else{
+    XRSTicketList * list = ticketArray[indexPath.section - 1];
+    if(list.isOpened){
         return 203.0f;
     }
+    else{
+        return 132.0f;
+    }
+}
+- (CGFloat)usedTableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    XRSTicketList * list = usedArray[indexPath.section];
+    if(list.isOpened){
+        return 203.0f;
+    }
+    else{
+        return 132.0f;
+    }
+
 }
 
-- (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    
-    if (indexPath.section == 0 && tableView == XRSTicketTableView)
-       
-        {
-            XRSAddTicketCell *cell= [tableView dequeueReusableCellWithIdentifier:
-                                 NSStringFromClass([XRSAddTicketCell class])];
-            if(!cell){
-                cell= [[XRSAddTicketCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:
-                       NSStringFromClass([XRSAddTicketCell class])];
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            }
-           
-            return cell;
-        }
-            
-    else {
-        XRSTicketCell *cell= [tableView dequeueReusableCellWithIdentifier:
-                              NSStringFromClass([XRSTicketCell class])];
-        if(!cell){
-            cell= [[XRSTicketCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:
-                   NSStringFromClass([XRSTicketCell class])];
+- (UITableViewCell *)tableView:(UITableView *)tableView
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (tableView == XRSUsedTableView) {
+       return  [self usedTableView:tableView cellForRowAtIndexPath:indexPath];
+    } else if (indexPath.section == 0 && tableView == XRSTicketTableView)
+        
+    {
+        XRSAddTicketCell *cell = [tableView
+                                  dequeueReusableCellWithIdentifier:NSStringFromClass(
+                                                                                      [XRSAddTicketCell class])];
+        if (!cell) {
+            cell = [[XRSAddTicketCell alloc]
+                    initWithStyle:UITableViewCellStyleDefault
+                    reuseIdentifier:NSStringFromClass([XRSAddTicketCell class])];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            tableView == XRSTicketTableView ? (cell.tag = TTag + indexPath.section - 1) : (cell.tag = UTag + indexPath.section);
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
-        if (ticketArray.count ==0) {
-            return cell;
-        }
-        NSInteger rowSection ;
-        if (tableView == XRSTicketTableView) {
-            rowSection = indexPath.section - 1;
-        }
-        else{
-            rowSection = indexPath.section;
-        }
-        XRSTicketList *list = ticketArray[rowSection];
-        [cell cellForData:list];
-        __weak typeof(self) weakSelf = self;
-        cell.onCellSelect = ^(BOOL isSelect){
-            [weakSelf cellSelectAction:isSelect section:rowSection];
-        };
-        cell.onCellOpened = ^(BOOL isOpen){
-            XRSTicketList * detail = ticketArray[rowSection];
-            detail.opened = isOpen;
-            [ticketArray replaceObjectAtIndex:rowSection withObject:detail];
-            [tableView reloadSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationFade];
-        };
+        
         return cell;
+    } else {
+       return  [self ticketTableView:tableView cellForRowAtIndexPath:indexPath];
     }
     
     return 0;
-
 }
+- (UITableViewCell *)ticketTableView:(UITableView *)tableView
+               cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    static NSString *Identifier = @"XRSTicketCell";
+     XRSTicketCell *cell= [tableView dequeueReusableCellWithIdentifier:
+     Identifier];
+//    XRSTicketCell *cell = [tableView
+//                           cellForRowAtIndexPath:
+//                           indexPath]; //根据indexPath准确地取出一行，而不是从cell重用队列中取出
+    
+    if (!cell) {
+        cell = [[XRSTicketCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                    reuseIdentifier:Identifier];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    }
+    if (ticketArray.count == 0) {
+        return cell;
+    }
+    NSInteger rowSection = indexPath.section - 1;
+    
+    XRSTicketList *list = ticketArray[rowSection];
+    [cell cellForData:list];
+    __weak typeof(self) weakSelf = self;
+    cell.onCellSelect = ^(BOOL isSelect) {
+        [weakSelf cellSelectAction:isSelect section:rowSection];
+    };
+    cell.onCellOpened = ^(BOOL isOpen) {
+        XRSTicketList *detail = ticketArray[rowSection];
+        detail.opened = isOpen;
+        [ticketArray replaceObjectAtIndex:rowSection withObject:detail];
+        [tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil]
+                         withRowAnimation:UITableViewRowAnimationNone];
+    };
+    
+    return cell;
+}
+
+- (UITableViewCell *)usedTableView:(UITableView *)tableView
+             cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    static NSString *Identifier = @"XRSUsedCell";
+     XRSTicketCell *cell= [tableView dequeueReusableCellWithIdentifier:
+     Identifier];
+    //XRSTicketCell *cell = [tableView
+//                           cellForRowAtIndexPath:
+//                           indexPath]; //根据indexPath准确地取出一行，而不是从cell重用队列中取出
+    
+    if (!cell) {
+        cell = [[XRSTicketCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                    reuseIdentifier:Identifier];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    }
+    if (usedArray.count == 0) {
+        return cell;
+    }
+    
+    XRSTicketList *list = usedArray[indexPath.section];
+    [cell cellForData:list];
+    __weak typeof(self) weakSelf = self;
+    cell.onCellSelect = ^(BOOL isSelect) {
+        [weakSelf cellSelectAction:isSelect section:indexPath.section];
+    };
+    cell.onCellOpened = ^(BOOL isOpen) {
+        XRSTicketList *detail = usedArray[indexPath.section];
+        detail.opened = isOpen;
+        [usedArray replaceObjectAtIndex:indexPath.section withObject:detail];
+        [tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil]
+                         withRowAnimation:UITableViewRowAnimationNone];
+    };
+    
+    return cell;
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
 //    DTSelectCell *cell = [tableView cellForRowAtIndexPath:indexPath];
