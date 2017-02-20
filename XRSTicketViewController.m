@@ -296,6 +296,11 @@
         make.right.equalTo(realContentView).offset(-11);
         make.top.equalTo(realContentView).offset(11);
     }];
+    //防止刷新cell arowImageView会重新赋予下箭头图标覆盖状态
+    CGFloat angle ;
+    !self.opened ? angle = M_PI:0;
+    arowImageView.layer.transform = CATransform3DMakeRotation(angle, 0, 0, 1);
+
     MASAttachKeys(realContentView,realContentView,contentLabel,contentLabel,backImageView,backImageView);
     [super layoutSubviews];
 
@@ -337,24 +342,13 @@
 - (void)arrowTapedAction:(UITapGestureRecognizer *)tap
 {
     self.opened = ! self.isOpened;
-
-    //arowImageView.transform =transform;
     if (self.onCellOpened) {
         self.onCellOpened(self.opened);
     }
-    CGFloat angle ;
-//    !self.opened ? angle =  180 *M_PI / 180.0 : (angle = 0*M_PI/180);
-    !self.opened ? angle =  3/2 *M_PI  : (angle = 0*M_PI/180);
-
-    arowImageView.layer.transform = CATransform3DMakeRotation(angle, 0, 0, 1);
 
     [UIView animateWithDuration:0.3 animations:^{
-//        arowImageView.transform = CGAffineTransformMakeRotation(angle);
-//        [self setNeedsLayout];
-//        [self layoutIfNeeded];
-
+        [self.contentView layoutIfNeeded];
     }];
-    //arowImageView.transform = CGAffineTransformMakeRotation(angle);
 
 }
 @end
@@ -722,6 +716,7 @@
         [ticketArray replaceObjectAtIndex:rowSection withObject:detail];
         [tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil]
                          withRowAnimation:UITableViewRowAnimationNone];
+        
     };
     
     return cell;
