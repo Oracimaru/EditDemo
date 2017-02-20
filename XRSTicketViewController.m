@@ -19,7 +19,6 @@
     UIImageView   *imageview;
     
 }
-@property (nonatomic, copy) void (^onEvent)(id classData);
 
 @end
 
@@ -76,19 +75,7 @@
 - (void)cellForData:(id )cellData {
     
 }
-- (void)buttonPressed:(UIButton *)sender{
-    switch (sender.tag) {
-        case 1:
-            if(self.onEvent){
-                self.onEvent(@{@"event":@"bookdownload",@"data":@""});
-            }
-            break;
-            
-        default:
-            break;
-    }
-    
-}
+
 @end
 
 @interface XRSTicketCell : UITableViewCell {
@@ -229,6 +216,7 @@
         UIImageView * imgView = [[UIImageView alloc]init];
         imgView.image = [UIImage imageNamed:@"向下"];
         imgView.userInteractionEnabled = YES;
+        imgView.translatesAutoresizingMaskIntoConstraints = NO;
         [realContentView addSubview:imgView];
         imgView;
     });
@@ -240,13 +228,14 @@
     });
     
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(arrowTapedAction:)];
-    //[arowImageView addGestureRecognizer:tap];
     [useLabel addGestureRecognizer:tap];
+    UITapGestureRecognizer *Imgtap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(arrowTapedAction:)];
+    [arowImageView addGestureRecognizer:Imgtap];
+
     isEdit = NO;
 }
 - (void)layoutSubviews
 {
-    [super layoutSubviews];
     [self.selectButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.contentView).offset(15);
         make.centerY.equalTo(self.contentView);
@@ -286,27 +275,30 @@
 
     [arowImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(useLabel.mas_right).offset(6);
-        make.bottom.equalTo(useLabel);
+//        make.bottom.equalTo(useLabel);
+        make.centerY.equalTo(useLabel);
         make.size.mas_equalTo(CGSizeMake(15, 14));
     }];
 
     __weak typeof(self) weakSelf = self;
-        [contentLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.left.equalTo(realContentView).offset(13);
-            make.right.equalTo(realContentView).offset(-13);
-            if (weakSelf.isOpened) {
-                make.top.equalTo(backImageView.mas_bottom).offset(11);
-            }else
-            {
-                make.top.bottom.equalTo(backImageView.mas_bottom);
-            }
-        }];
+    [contentLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(realContentView).offset(13);
+        make.right.equalTo(realContentView).offset(-13);
+        if (weakSelf.isOpened) {
+            make.top.equalTo(backImageView.mas_bottom).offset(11);
+        }else
+        {
+            make.top.bottom.equalTo(backImageView.mas_bottom);
+        }
+    }];
    
     [sealView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.equalTo(realContentView).offset(-11);
         make.top.equalTo(realContentView).offset(11);
     }];
     MASAttachKeys(realContentView,realContentView,contentLabel,contentLabel,backImageView,backImageView);
+    [super layoutSubviews];
+
 }
 
 
@@ -346,14 +338,24 @@
 {
     self.opened = ! self.isOpened;
 
+    //arowImageView.transform =transform;
     if (self.onCellOpened) {
         self.onCellOpened(self.opened);
     }
+    CGFloat angle ;
+//    !self.opened ? angle =  180 *M_PI / 180.0 : (angle = 0*M_PI/180);
+    !self.opened ? angle =  3/2 *M_PI  : (angle = 0*M_PI/180);
+
+    arowImageView.layer.transform = CATransform3DMakeRotation(angle, 0, 0, 1);
+
     [UIView animateWithDuration:0.3 animations:^{
-        [self.contentView layoutIfNeeded];
-        
+//        arowImageView.transform = CGAffineTransformMakeRotation(angle);
+//        [self setNeedsLayout];
+//        [self layoutIfNeeded];
+
     }];
-    
+    //arowImageView.transform = CGAffineTransformMakeRotation(angle);
+
 }
 @end
 
@@ -697,9 +699,6 @@
     static NSString *Identifier = @"XRSTicketCell";
      XRSTicketCell *cell= [tableView dequeueReusableCellWithIdentifier:
      Identifier];
-//    XRSTicketCell *cell = [tableView
-//                           cellForRowAtIndexPath:
-//                           indexPath]; //根据indexPath准确地取出一行，而不是从cell重用队列中取出
     
     if (!cell) {
         cell = [[XRSTicketCell alloc] initWithStyle:UITableViewCellStyleDefault
@@ -733,9 +732,6 @@
     static NSString *Identifier = @"XRSUsedCell";
      XRSTicketCell *cell= [tableView dequeueReusableCellWithIdentifier:
      Identifier];
-    //XRSTicketCell *cell = [tableView
-//                           cellForRowAtIndexPath:
-//                           indexPath]; //根据indexPath准确地取出一行，而不是从cell重用队列中取出
     
     if (!cell) {
         cell = [[XRSTicketCell alloc] initWithStyle:UITableViewCellStyleDefault
